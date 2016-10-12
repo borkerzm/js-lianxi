@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算器</title>
+    <style>
+        #jisuanqi{width: 520px;margin: 0 auto; border: 1px solid grey;
+            background-color: white;border-radius: 5px;overflow: hidden;
+        margin-top: 50px}
+        input{border: none;background-color: #0066cc;color: white;outline: none;
+            text-align: right;width: 100%;height: 1em;font-size: 2em;
+        }
+        #jisuanqi>div:after,#number:after{content: "";display: block;clear: both;}
+        #number{float: left;width: 300px;padding-top: 20px;}
+        button{width: 80px;height: 80px;background-color: gainsboro;font-size: 2em;
+                color: black;margin-left: 20px;float: left;border-radius: 5px;
+            margin-bottom: 20px;}
+        #number button:nth-last-child(2){width: 180px;}
+        #jisuanqi>div>div:last-child{padding: 20px 20px 0 0}
+        #jisuanqi>div>div:last-child>button:nth-last-child(3){height: 180px;}
+    </style>
+    <script>
+        window.onload=function(){
+            var gongshi = document.getElementById("gongshi");//得到公式输入框，存入数字运算公式
+            var number = document.querySelectorAll("#number>button");
+            var fuhao=document.getElementsByClassName("fuhao");//运算符号
+            var jieguo = document.getElementById("jieguo");//结果
+            var qiu = document.getElementById("qiu");//等于
+            var del = document.getElementById("del");//删除
+            var clear = document.getElementById("clear");
+            for(var i=0; i<number.length;i++){
+                number[i].onclick=function(){
+                    var now = gongshi.getAttribute("number");//获取档期操作的数字。
+                    //如果当前操作数字已经是0，那么再按下0时不执行累加。
+                    if(jieguo.getAttribute("flag")=="true"){
+                        jieguo.value="";
+                        gongshi.value="";
+                        jieguo.getAttribute("flag","false")
+
+                    }
+                    //如果当前操作数字为0；再按0不执行累加
+                    if(now=="0"&&this.innerText=="0"){
+                    //如果当前操作数字已经是0；并且按下的也不是小数点那么数字会替换掉0
+
+                        return;
+                    }else if(now=="0"&&this.innerText!="."){
+                        gongshi.value=this.innerText;
+                        now=this.innerText;
+                        gongshi.setAttribute("number",now); //更新当前操作数字
+                    }else if(now.indexOf(".")>=0&&this.innerText=="."){//匹配当前操作字符串“.”是否存在于字符串中。如果存在返回下标，不存在则返回。
+                       //如果公式中存在.那么不在添加.
+                        //匹配字符是否存在字符串中，如果存在则返回下标；如果不存在
+                        // 则返回-1;lastIndexof()
+                        // 如果当前操作数字已存在小数点，不执行，以及结束function
+
+                        return;
+                    }else if(now.length==0&&this.innerText=="."){
+                        //如果公式里什么都没有，并且为.时在前面追加一个0
+                        gongshi.value = "0.";
+                        now="0.";
+                        gongshi.setAttribute("number",now);
+                    }else{
+                        gongshi.value+=this.innerText;
+                        now+=this.innerText;
+                        gongshi.setAttribute("number",now);
+                    }
+
+                }
+            }
+            for(i=0;i<fuhao.length;i++){
+                fuhao[i].onclick=function(){
+                    var maxIndex = gongshi.value.length-1;//字符串中的最大下标
+                    if(jieguo.getAttribute("flag")=="true"){
+                        gongshi.value=jieguo.value+this.innerText;
+                        jieguo.value="";
+                        jieguo.setAttribute("flag","false")
+                    }else if(gongshi.value.lastIndexOf("+") == maxIndex||
+                           gongshi.value.lastIndexOf("-") == maxIndex||
+                           gongshi.value.lastIndexOf("*") == maxIndex||
+                           gongshi.value.lastIndexOf("/") == maxIndex){
+                            gongshi.value=gongshi.value.substr(0,maxIndex)+this.innerText;
+                            //substring() 方法用于提取字符串中介于两个指定下标之间的字符。语法：stringObject.substring(start,stop)
+                            //substring() 方法返回的子串包括 start 处的字符，但不包括 stop 处的字符。
+                            //如果参数 start 与 stop 相等，那么该方法返回的就是一个空串（即长度为 0 的字符串）。
+                            // 如果 start 比 stop 大，那么该方法在提取子串之前会先交换这两个参数。
+                            //stringObject.substr(start,length)
+                            // 一个新的字符串，包含从 stringObject 的 start（包括 start 所指的字符） 处开始的 length 个字符。
+                            // 如果没有指定 length，那么返回的字符串包含从 start 到 stringObject 的结尾的字符。
+                    }else{
+                        gongshi.value+=this.innerText;
+                        gongshi.setAttribute("number","")
+                    }
+
+                }
+            }
+            qiu.onclick=function(){
+                var number=eval(gongshi.value).toFixed(2);
+                var xiaoshu=number.substring(number.indexOf(".")+1);
+                if(xiaoshu=="00"){
+                    number=number.substring(0,number.indexOf("."));
+                }else if(number.lastIndexOf("0")==number.length-1){
+                    number=number.substring(0,number.length-1)
+                }
+                jieguo.value=number;
+                jieguo.setAttribute("flag","true")
+
+            };
+            del.onclick=function(){
+                gongshi.value=gongshi.value.substring(0,gongshi.value.length-1);
+                var now = gongshi.getAttribute("number");
+                now=now.substring(0,now.length-1);
+                gongshi.setAttribute("number",now);
+            };
+            clear.onclick=function(){
+                jieguo.value="";
+                gongshi.value="";
+                gongshi.setAttribute("number","")
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div id="jisuanqi">
+        <input type="text" id="gongshi" number="" disabled>
+        <input type="text" id="jieguo" flag="false" disabled>
+        <div>
+            <div id="number">
+                <button>1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>4</button>
+                <button>5</button>
+                <button>6</button>
+                <button>7</button>
+                <button>8</button>
+                <button>9</button>
+                <button>0</button>
+                <button>.</button>
+            </div>
+            <div>
+                <button id="del">←</button>
+                <button id="clear">C</button>
+                <button class="fuhao">+</button>
+                <button class="fuhao">-</button>
+                <button id="qiu">=</button>
+                <button class="fuhao">*</button>
+                <button class="fuhao">/</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
